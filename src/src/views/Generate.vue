@@ -1,40 +1,66 @@
 <template lang="pug">
 	div.container
-		h1 {{ $t("Information") }}  
+		h1 {{ $t("Information") }}
 		table.table.table-sm
 			tbody 
 				tr
 					td 
-						label.mr-3 {{ $t("Name") }}  
+						label.mr-3 {{ $t("Name") }}
 					td 
-						input.form-control(type="text", :placeholder="$t('ExampleName')", size="32", v-model="name")
+						input.py-1.h-100.form-control(type="text", :placeholder="$t('ExampleName')", size="32", v-model="name")
 				tr
 					td 
-						label.mr-3 {{ $t("Author") }}  
+						label.mr-3 {{ $t("Author") }}
 					td 
-						input.form-control(type="text", :placeholder="$t('ExampleAuthor')", size="32", v-model="author")
+						input.py-1.h-100.form-control(type="text", :placeholder="$t('ExampleAuthor')", size="32", v-model="author")
 				tr
 					td 
-						label.mr-3 {{ $t("Description") }}  
+						label.mr-3 {{ $t("Description") }}
 					td 
-						input.form-control(type="text", :placeholder="$t('ExampleDescription')", size="32", v-model="description")
+						input.py-1.h-100.form-control(type="text", :placeholder="$t('ExampleDescription')", size="32", v-model="description")
 				tr
 					td 
-						label.mr-3 {{ $t("Version") }}  
+						label.mr-3 {{ $t("Version") }}
 					td 
-						input.form-control(type="text", :placeholder="$t('ExampleVersion')", size="32", v-model="version")
+						input.py-1.h-100.form-control(type="text", :placeholder="$t('ExampleVersion')", size="32", v-model="version")
 				tr
 					td 
-						label.mr-3 {{ $t("Link") }}  
+						label.mr-3 {{ $t("Link") }}
 					td 
-						input.form-control(type="text", :placeholder="$t('ExampleLink')", size="32", v-model="url")
+						input.py-1.h-100.form-control(type="text", :placeholder="$t('ExampleLink')", size="32", v-model="url")
+		
+		h1 {{ $t("Addons") }}
+		table.table.table-sm
+			tbody 
+				tr
+					td 
+						label.mr-3 {{ $t("ConnectCommand") }}
+					td 
+						div.input-group
+							input.py-1.h-100.form-control(type="text", :placeholder="$t('ExampleConnectCommand')", size="32", v-model="command")
+							div.input-group-append
+								input.py-1.h-100.form-control(type="text", :placeholder="$t('ExampleDelay')", v-model="delay")
 
-		div.d-flex.justify-content-around.mt-5
-			button.btn.btn-warning.btn-lg.w-25(@click="$router.push('./')") {{ $t("GoBack") }}  
+		div.d-flex.justify-content-around.mt-3
+			button.btn.btn-secondary.btn-lg.w-25(@click="$router.push('./')") {{ $t("GoBack") }}  
 			button.btn.btn-primary.btn-lg.w-50(@click="save_as_plugin()") {{ $t("DownloadSp") }}  
 		
-		h1.mt-3 {{ $t("Debug") }}    
-		textarea.w-100.mt-3(ref="output", rows="12", style="font-family: Consolas, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace")
+		// h1.mt-3 {{ $t("Debug") }}
+		// textarea.w-100.mt-3(ref="output", rows="12", style="font-family: Consolas, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace")
+		h1.mt-5 {{ $t("Developer") }}
+		table.table.table-sm
+			tbody 
+				tr
+					td 
+						label.mr-3 {{ $t("VariablePrefix") }}  
+					td 
+						input.py-1.h-100.form-control(type="text", :placeholder="$t('ExampleVariablePrefix')", size="32", v-model="variable_prefix")
+				tr
+					td 
+						label.mr-3 {{ $t("HandlerPrefix") }}  
+					td 
+						input.py-1.h-100.form-control(type="text", :placeholder="$t('ExampleHandlerPrefix')", size="32", v-model="handler_prefix")
+
 </template>
 
 <i18n>
@@ -54,7 +80,17 @@
 		"Actions": "Actions",
 		"GoBack": "Back",
 		"DownloadSp": "Download source code (.sp)",
-		"Debug": "Debug log"
+		"Debug": "Debug log",
+		"Developer": "Developer",
+		"VariablePrefix": "Variable's prefix",
+		"ExampleVariablePrefix": "g_",
+		"HandlerPrefix": "Handler's prefix",
+		"ExampleHandlerPrefix": "Handlers_",
+		"Addons": "Addons",
+		"ConnectCommand": "Client command after connect",
+		"ExampleConnectCommand": "Example: sm_main_menu",
+		"ExampleDelay": "Delay, sec",
+		"": ""
 	},
 	"ru": {
 		"Information": "Информация о плагине",
@@ -70,8 +106,18 @@
 		"ExampleLink": "https://www.example.com/",
 		"Actions": "Действия",
 		"GoBack": "Назад",
-		"DownloadSp": "Скачать исходный код плагина (.sp)",
-		"Debug": "Отладка"
+		"DownloadSp": "Скачать исходный код (.sp)",
+		"Debug": "Отладка",
+		"Developer": "Разработчику",
+		"VariablePrefix": "Префикс переменных",
+		"ExampleVariablePrefix": "g_",
+		"HandlerPrefix": "Префикс хандлеров",
+		"ExampleHandlerPrefix": "Handlers_",
+		"Addons": "Дополнения",
+		"ConnectCommand": "Команда клиента после входа",
+		"ExampleConnectCommand": "Например, sm_main_menu",
+		"ExampleDelay": "Задержка, сек",
+		"": ""
 	}
 }
 </i18n>
@@ -90,7 +136,11 @@ export default {
 			description: "",
 			version: "",
 			url: "",
-			items_per_page: 0
+			items_per_page: 0,
+			variable_prefix: "g_",
+			handler_prefix: "Handler_",
+			command: "",
+			delay: 0.0,
 		};
 	},
 
@@ -105,38 +155,14 @@ export default {
 			this.description = proxy.description;
 			this.version = proxy.version;
 			this.url = proxy.url;
+			this.variable_prefix = proxy.variable_prefix || "g_";
+			this.handler_prefix = proxy.handler_prefix || "Handler_";
+			this.command = proxy.command || "";
+			this.delay = proxy.delay || "";
 		}
 	},
 
 	methods: {
-		save_as_json: function() {
-			localStorage.setItem(
-				"pluginInformation",
-				JSON.stringify({
-					name: this.name,
-					author: this.author,
-					description: this.description,
-					version: this.version,
-					url: this.url
-				})
-			);
-
-			let key,
-				output = {};
-			let prefix = "_menubuilder_";
-			for (let i = 0; i < localStorage.length; ++i) {
-				key = localStorage.key(i);
-				if (key.startsWith(prefix)) {
-					output[key.substr(prefix.length)] = localStorage.getItem(
-						key
-					);
-				}
-			}
-
-			// this.$refs.output.value = JSON.stringify(output);
-			this.save_file("menubuild.json", JSON.stringify(output));
-		},
-
 		save_file: function(filename, text) {
 			let element = document.createElement("a");
 			element.setAttribute(
@@ -161,7 +187,11 @@ export default {
 					author: this.author,
 					description: this.description,
 					version: this.version,
-					url: this.url
+					url: this.url,
+					variable_prefix: this.variable_prefix,
+					handler_prefix: this.handler_prefix,
+					command: this.command,
+					delay: this.delay
 				})
 			);
 
@@ -182,6 +212,7 @@ export default {
 			let header = this.create_header();
 			let variables = this.create_variables(data, names);
 			let plugin_start = this.create_plugin_start(data, names);
+			let connect_command = this.create_connect_command();
 			let commands = this.create_commands(data, names);
 
 			let output = "";
@@ -192,6 +223,9 @@ export default {
 			output += `\n`;
 
 			output += plugin_start;
+			output += `\n`;
+
+			output += connect_command;
 			output += `\n`;
 
 			output += commands;
@@ -217,40 +251,40 @@ export default {
 			this.save_file(`${this.name || "imenubuilder"}.sp`, output);
 		},
 
-		create_header() {
+		create_header: function() {
 			let output = "";
 			output += `#include <sourcemod>\n`;
 			output += `\n`;
 
 			output += `public Plugin:myinfo = \n`;
 			output += `{\n`;
-			output += `    name        = "${this.name}",\n`;
-			output += `    author      = "${this.author}",\n`;
-			output += `    description = "${this.description}",\n`;
-			output += `    version     = "${this.version}",\n`;
-			output += `    url         = "${this.url}"\n`;
+			output += `    name        = "${this.format_text(this.name)}",\n`;
+			output += `    author      = "${this.format_text(this.author)}",\n`;
+			output += `    description = "${this.format_text(this.description)}",\n`;
+			output += `    version     = "${this.format_text(this.version)}",\n`;
+			output += `    url         = "${this.format_text(this.url)}"\n`;
 			output += `}\n`;
 
 			return output;
 		},
 
-		create_variables(data, names) {
+		create_variables: function(data, names) {
 			let output = "";
 			for (let i = 0; i < names.length; ++i) {
-				output += `new Handle: g_${names[i]};\n`;
+				output += `new Handle: ${this.variable_prefix}${names[i]};\n`;
 
 				if (
 					data[names[i]].items &&
 					data[names[i]].items.length > this.items_per_page
 				) {
-					output += `new g_${names[i]}_position[MAXPLAYERS + 1];\n`;
+					output += `new ${this.variable_prefix}${names[i]}_position[MAXPLAYERS + 1];\n`;
 				}
 			}
 
 			return output;
 		},
 
-		create_plugin_start(data, names) {
+		create_plugin_start: function(data, names) {
 			let output = "";
 			output += `public OnPluginStart()\n`;
 			output += `{\n`;
@@ -285,45 +319,45 @@ export default {
 			return output;
 		},
 
-		create_menu(name, menu) {
+		create_menu: function(name, menu) {
 			let output = "\n";
-			output += `    g_${name} = CreateMenu(Handler_${name});\n`;
-			output += `    SetMenuTitle(g_${name}, "${menu.title.replace(/"/g, '\\"')}")\n`;
+			output += `    ${this.variable_prefix}${name} = CreateMenu(${this.handler_prefix}${name});\n`;
+			output += `    SetMenuTitle(${this.variable_prefix}${name}, "${menu.title.replace(/"/g, '\\"')}")\n`;
 			for (let i = 0; i < menu.items.length; ++i) {
 				if (menu.items[i].actions && menu.items[i].actions.length > 0) {
-					output += `    AddMenuItem(g_${name}, "${
+					output += `    AddMenuItem(${this.variable_prefix}${name}, "${
 						menu.items[i].position
 					}", "${this.format_text(menu.items[i].text)}")\n`;
 				} else {
-					output += `    AddMenuItem(g_${name}, "${
+					output += `    AddMenuItem(${this.variable_prefix}${name}, "${
 						menu.items[i].position
 					}", "${this.format_text(menu.items[i].text)}", ITEMDRAW_DISABLED)\n`;
 				}
 			}
 			if (menu.exit_back && menu.exit_back.length > 0) {
-				output += `    SetMenuExitBackButton(g_${name}, true);\n`;
+				output += `    SetMenuExitBackButton(${this.variable_prefix}${name}, true);\n`;
 			}
 
 			return output;
 		},
 
-		create_panel(name, menu) {
+		create_panel: function(name, menu) {
 			let output = "\n";
-			output += `    g_${name} = CreatePanel();\n`;
-			output += `    SetPanelTitle(g_${name}, "${menu.title.replace(/"/g, '\\"')}")\n`;
+			output += `    ${this.variable_prefix}${name} = CreatePanel();\n`;
+			output += `    SetPanelTitle(${this.variable_prefix}${name}, "${menu.title.replace(/"/g, '\\"')}")\n`;
 			for (let i = 0; i < menu.items.length; ++i) {
 				if (menu.items[i].position != 0) {
-					output += `    SetPanelCurrentKey(g_${name}, ${
+					output += `    SetPanelCurrentKey(${this.variable_prefix}${name}, ${
 						menu.items[i].position
 					})\n`;
 				}
 
 				if (menu.items[i].actions && menu.items[i].actions.length > 0) {
-					output += `    DrawPanelItem(g_${name}, "${
+					output += `    DrawPanelItem(${this.variable_prefix}${name}, "${
 						this.format_text(menu.items[i].text)
 					}")\n`;
 				} else {
-					output += `    DrawPanelText(g_${name}, "${
+					output += `    DrawPanelText(${this.variable_prefix}${name}, "${
 						this.format_text(menu.items[i].text)
 					}")\n`;
 				}
@@ -332,7 +366,38 @@ export default {
 			return output;
 		},
 
-		create_commands(data, names) {
+		create_connect_command: function() {
+			if (this.command.length) {
+				let output = `public OnClientPutInServer(client)\n`;
+				output += `{\n`;
+				if (this.delay.length && this.delay > 0.0) {
+					output += `    CreateTimer(${Number(this.delay).toFixed(1)}, Timer_DelayConnectCommand, GetClientUserId(client));\n`
+				}
+				else {
+					output += `    FakeClientCommand(client, "${this.format_text(this.command)}");\n`
+				}
+				output += `}\n`;
+
+				if (this.delay.length && this.delay > 0.0) {
+					output += `\n`;
+					output += `public Action:Timer_DelayConnectCommand(Handle:timer, any:userid)\n`;
+					output += `{\n`;
+					output += `    new client = GetClientOfUserId(userid);\n`;
+					output += `    if (client > 0 && client <= MaxClients && IsClientInGame(client))\n`;
+					output += `    {\n`;
+					output += `        FakeClientCommand(client, "${this.format_text(this.command)}");\n`;
+					output += `    }\n`;
+					output += `}\n`;
+				}
+
+				return output;
+			}
+			else {
+				return "";
+			}
+		},
+
+		create_commands: function(data, names) {
 			let output = "";
 			for (let i = 0; i < names.length; ++i) {
 				if (
@@ -352,9 +417,9 @@ export default {
 			return output;
 		},
 
-		create_menu_handler(name, menu, menus) {
+		create_menu_handler: function(name, menu, menus) {
 			let output = "";
-			output += `public Handler_${name}(Handle:menu, MenuAction:action, client, slot)\n`;
+			output += `public ${this.handler_prefix}${name}(Handle:menu, MenuAction:action, client, slot)\n`;
 			output += `{\n`;
 
 			output += `    switch (action)\n`;
@@ -422,7 +487,7 @@ export default {
 									.exit_back !== "" &&
 								menus[name].items.length > this.items_per_page
 							) {
-								output += `                g_${name}_position[client] = GetMenuSelectionPosition();\n`;
+								output += `                ${this.variable_prefix}${name}_position[client] = GetMenuSelectionPosition();\n`;
 							}
 
 							output += this.display_menu(
@@ -475,9 +540,9 @@ export default {
 			return output;
 		},
 
-		create_panel_handler(name, menu, menus) {
+		create_panel_handler: function(name, menu, menus) {
 			let output = "";
-			output += `public Handler_${name}(Handle:panel, MenuAction:action, client, slot)\n`;
+			output += `public ${this.handler_prefix}${name}(Handle:panel, MenuAction:action, client, slot)\n`;
 			output += `{\n`;
 
 			output += `    switch (action)\n`;
@@ -579,19 +644,19 @@ export default {
 						exit_back &&
 						menus[menu].items.length > this.items_per_page
 					) {
-						output += `${offset}DisplayMenuAtItem(g_${menu}, client, g_${menu}_position[client], MENU_TIME_FOREVER);\n`;
+						output += `${offset}DisplayMenuAtItem(${this.variable_prefix}${menu}, client, ${this.variable_prefix}${menu}_position[client], MENU_TIME_FOREVER);\n`;
 					} else {
-						output += `${offset}DisplayMenu(g_${menu}, client, MENU_TIME_FOREVER);\n`;
+						output += `${offset}DisplayMenu(${this.variable_prefix}${menu}, client, MENU_TIME_FOREVER);\n`;
 					}
 				} else {
-					output += `${offset}SendPanelToClient(g_${menu}, client, Handler_${menu}, MENU_TIME_FOREVER);\n`;
+					output += `${offset}SendPanelToClient(${this.variable_prefix}${menu}, client, ${this.handler_prefix}${menu}, MENU_TIME_FOREVER);\n`;
 				}
 			}
 
 			return output;
 		},
 
-		format_command(command, prefix, fn, offset) {
+		format_command: function(command, prefix, fn, offset) {
 			let output = "";
 
 			let args = "";

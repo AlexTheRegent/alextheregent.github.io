@@ -22,6 +22,7 @@
 		
 		// 382 - с navbar
 		// 326 - без navbar 
+		// 144 - navbar
 		router-view(style="min-height: calc(100vh - 144px)")
 
 		footer.bg-dark.mt-4.d-flex.text-white.justify-content-between.py-2
@@ -29,7 +30,7 @@
 				span.mr-3 (c) AlexTheRegent 
 				a(rel="license", href="http://creativecommons.org/licenses/by-nc-sa/4.0/").d-inline
 					img(alt="Creative Commons License" style="border-width:0; margin-bottom: 2px" src="https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png")
-			div.px-5 v1.0-beta01 
+			div.px-5 v1.0-beta02
 </template>
 
 <script>
@@ -37,15 +38,15 @@ export default {
 	name: "app",
 
 	created: function() {
-		let lang = this.$cookies.get("lang")
+		let lang = this.$cookies.get("lang");
 		if (!lang) {
 			lang = navigator.language || navigator.userLanguage;
-			if ( lang.indexOf("ru") === 0 ) {
-				lang = 'ru';
+			if (lang.indexOf("ru") === 0) {
+				lang = "ru";
 			} else {
-				lang = 'en';
+				lang = "en";
 			}
-			this.$cookies.set('lang', lang);
+			this.$cookies.set("lang", lang);
 		}
 
 		window.i18n.locale = this.$cookies.get("lang") || "en";
@@ -53,7 +54,7 @@ export default {
 
 	methods: {
 		update_language: function(event) {
-			this.$cookies.set('lang', event.target.value);
+			this.$cookies.set("lang", event.target.value);
 			this.$router.go();
 		}
 	}
@@ -79,6 +80,10 @@ export default {
 </i18n>
 
 <style>
+body {
+	overflow-y: scroll;
+}
+
 .tooltip-vue {
 	display: block !important;
 	z-index: 10000;

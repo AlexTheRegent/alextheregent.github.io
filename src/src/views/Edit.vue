@@ -8,13 +8,13 @@
 					td.align-middle
 						label.mr-3 {{ $t("Name") }} 
 					td 
-						input.form-control(type="text", :placeholder="$t('ExampleName')", size="32", v-model="name", @input="name = name.replace(/[^a-zA-Z]/g, '')")
+						input.form-control(type="text", :placeholder="$t('ExampleName')", size="32", v-model="name", @input="name = name.replace(/[^a-zA-Z0-9_]/g, '')")
 				tr
 					td.align-middle
 						label.mr-3 {{ $t("Command") }} 
 					td 
 						div.input-group
-							input.form-control(type="text", :placeholder="$t('ExampleCommand')", size="32", v-model="command")
+							input.form-control(type="text", :placeholder="$t('ExampleCommand')", size="32", v-model="command", @input="command = command.replace(/[^a-zA-Z0-9_]/g, '')")
 							div.input-group-append
 								select#flags(multiple, :title="$t('AccessFlags')", @change="update_flags")
 									option(value="ADMFLAG_RESERVATION") a
@@ -155,8 +155,8 @@
 {
 	"en": {
 		"Parameters": "Parameters",
-		"Name": "Unique menu mane:",
-		"ExampleName": "Example: main (only letters!)",
+		"Name": "Unique menu name:",
+		"ExampleName": "Example: main",
 		"Command": "Command to open menu:",
 		"ExampleCommand": "Example: sm_main",
 		"AccessFlags": "Access flags",
@@ -196,7 +196,7 @@
 	"ru": {
 		"Parameters": "Параметры меню",
 		"Name": "Уникальное название меню:",
-		"ExampleName": "Пример: main (только англ буквы!)",
+		"ExampleName": "Пример: main",
 		"Command": "Команда открытия меню:",
 		"ExampleCommand": "Пример: sm_main",
 		"AccessFlags": "Флаги доступа",
@@ -237,29 +237,6 @@
 </i18n>
 
 <style>
-#preview {
-	border-radius: 10px;
-	padding: 10px 20px;
-	background-color: #666;
-	color: #e6e1c3;
-	font-size: 18pt;
-}
-
-.item-active:first-child {
-	color: #dda627;
-}
-
-.overflow-hidden {
-	overflow: hidden;
-}
-
-.raw-html {
-	white-space: pre-wrap;
-}
-
-.btn.dropdown-toggle.btn-light {
-	border: 1px solid #ccc;
-}
 </style>
 
 <script>
@@ -389,7 +366,7 @@ export default {
 
 	methods: {
 		dump: function() {
-			console.log('hi')
+			// console.log('hi')
 		},
 
 		refresh_select: function(selector) {
