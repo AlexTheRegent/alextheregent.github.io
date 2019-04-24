@@ -24,7 +24,7 @@
 		"Type": "Type:",
 		"MenuType": "Menu",
 		"PanelType": "Panel",
-		"ExitBack": "Exit in menu will open menu:",
+		"ExitBack": "\"Back\" in menu will open menu:",
 		"ExampleExitBack": "Optionally, unique menu name",
 		"Content": "Content",
 		"Menu": "Menu",
@@ -55,7 +55,8 @@
 		"Load": "Load",
 		"SaveMenu": "Save menu",
 		"MenuOnly": "Only for menus",
-		"MenuSaved": "Menu saved!"
+		"MenuSaved": "Menu saved!",
+		"DragToMove": "Drag to change order"
 	},
 
 	"ru": {
@@ -113,6 +114,7 @@
 		"Load": "Загрузить",
 		"SaveMenu": "Сохранить меню",
 		"MenuOnly": "Только для меню",
-		"MenuSaved": "Меню сохранено!"
+		"MenuSaved": "Меню сохранено!",
+		"DragToMove": "Перетащите для изменения номера"
 	}
 }

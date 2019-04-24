@@ -30,7 +30,7 @@
 				span.mr-3 (c) AlexTheRegent 
 				a(rel="license", href="http://creativecommons.org/licenses/by-nc-sa/4.0/").d-inline
 					img(alt="Creative Commons License" style="border-width:0; margin-bottom: 2px" src="https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png")
-			div.px-5 v1.0-beta02
+			div.px-5 v1.0-beta03
 </template>
 
 <script>

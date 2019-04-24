@@ -104,43 +104,49 @@
 									span.input-group-text.py-1.h-100 {{ $t("Title") }}
 								input#menu-title.form-control.py-1.h-100(type="text", :placeholder="$t('ExampleTitle')", v-model="title")
 						
-						div.mb-3(v-for="item of items")
-							div.row
-								div.input-group
-									div.input-group-prepend
-										span.input-group-text.py-1.h-100(v-if="type==='menu'") {{ item.position }}
-										select.input-group-text.py-1.h-100(v-else, v-model:value="item.position", @change="sort_items")
-											option(value=" ") 
-											option(v-for="value in 9" :value="value") {{ value }}
-											option(value="0") 0
-									input.form-control.py-1.h-100(type="text", :placeholder="$t('ExampleItem')", v-model="item.text")
-									div.input-group-append
-										button.btn.btn-secondary(@click="delete_item(item)", data-toggle="tooltip", data-placement="top", :title="$t('Delete')") X
+						draggable(v-model="items", :move="start_drag", @end="sort_items", handle=".handle", v-bind="dragOptions")
+							transition-group(type="transition")
+								div.mb-3(v-for="item of items", :key="item.text")
+									div.row
+										div.input-group
+											div.input-group-prepend
+												span.input-group-text.py-1.h-100(v-if="type==='menu'") {{ item.position }}
+												select.input-group-text.py-1.h-100(v-else, v-model:value="item.position", @change="sort_items")
+													option(value=" ") 
+													option(v-for="value in 9" :value="value") {{ value }}
+													option(value="0") 0
+											input.form-control.py-1.h-100(type="text", :placeholder="$t('ExampleItem')", v-model="item.text")
+											div.input-group-append
+												button.btn.btn-secondary(@click="delete_item(item)", data-toggle="tooltip", data-placement="top", :title="$t('Delete')") X
 
-							div.row
-								div.input-group(v-for="action of item.actions")
-									div.input-group-prepend
-										span.input-group-text.py-1.h-100(v-if="action.action === 'open'") {{ $t("OpenMenu") }}
-										span.input-group-text.py-1.h-100(v-if="action.action === 'pcmd'") {{ $t("ClientCommand") }}
-										span.input-group-text.py-1.h-100(v-if="action.action === 'scmd'") {{ $t("ServerCommand") }}
-										span.input-group-text.py-1.h-100(v-if="action.action === 'close'") {{ $t("CloseMenu") }}
+									div.row
+										div.input-group(v-for="action of item.actions")
+											div.input-group-prepend
+												span.input-group-text.py-1.h-100(v-if="action.action === 'open'") {{ $t("OpenMenu") }}
+												span.input-group-text.py-1.h-100(v-if="action.action === 'pcmd'") {{ $t("ClientCommand") }}
+												span.input-group-text.py-1.h-100(v-if="action.action === 'scmd'") {{ $t("ServerCommand") }}
+												span.input-group-text.py-1.h-100(v-if="action.action === 'close'") {{ $t("CloseMenu") }}
 
-									// input.form-control(v-if="action.action === 'open'", type="text", :placeholder="$t('ExampleOpenMenu')", v-model="action.target", @input="action.target = action.target.replace(/[^a-zA-Z]/g, '')", v-on:load="dump")
-									LiveSearch(v-if="action.action === 'open'", v-bind:title="$t('ExampleOpenMenu')", v-bind:menu_names="menus", v-model="action.target")
-									input.form-control.py-1.h-100(v-if="action.action === 'pcmd'", type="text", :placeholder="$t('ExampleClientCommand')", v-model="action.target")
-									input.form-control.py-1.h-100(v-if="action.action === 'scmd'", type="text", :placeholder="$t('ExampleServerCommand')", v-model="action.target")
-									input.form-control.py-1.h-100(v-if="action.action === 'close'", type="text", placeholder="", v-model="action.target", disabled)
+											// input.form-control(v-if="action.action === 'open'", type="text", :placeholder="$t('ExampleOpenMenu')", v-model="action.target", @input="action.target = action.target.replace(/[^a-zA-Z]/g, '')", v-on:load="dump")
+											LiveSearch(v-if="action.action === 'open'", v-bind:title="$t('ExampleOpenMenu')", v-bind:menu_names="menus", v-model="action.target")
+											input.form-control.py-1.h-100(v-if="action.action === 'pcmd'", type="text", :placeholder="$t('ExampleClientCommand')", v-model="action.target")
+											input.form-control.py-1.h-100(v-if="action.action === 'scmd'", type="text", :placeholder="$t('ExampleServerCommand')", v-model="action.target")
+											input.form-control.py-1.h-100(v-if="action.action === 'close'", type="text", placeholder="", v-model="action.target", disabled)
 
-									div.input-group-append
-										button.btn.btn-secondary(@click="delete_action(item, action)", data-toggle="tooltip", data-placement="top", :title="$t('Delete')") X
+											div.input-group-append
+												button.btn.btn-secondary(@click="delete_action(item, action)", data-toggle="tooltip", data-placement="top", :title="$t('Delete')") X
 
-								div.mt-1.mx-auto
-									button.btn.btn-outline-secondary.btn-sm(type="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") {{ $t("AddAction") }}
-									div.dropdown-menu
-										button.dropdown-item(@click="add_action(item, 'open')") {{ $t("OpenMenu") }} 
-										button.dropdown-item(@click="add_action(item, 'pcmd')") {{ $t("ClientCommand") }} 
-										button.dropdown-item(@click="add_action(item, 'scmd')") {{ $t("ServerCommand") }} 
-										button.dropdown-item(@click="add_action(item, 'close')") {{ $t("CloseMenu") }} 
+										div.mt-1.w-100.d-flex.justify-content-between
+											div(style="width: 0%; overflow: visible; cursor: all-scroll")
+												i.fa.fa-align-justify.handle.ml-2(style="vertical-align: middle", v-if="type==='menu'", :title="$t('DragToMove')")
+											div
+												button.btn.btn-outline-secondary.btn-sm(type="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") {{ $t("AddAction") }}
+												div.dropdown-menu
+													button.dropdown-item(@click="add_action(item, 'open')") {{ $t("OpenMenu") }} 
+													button.dropdown-item(@click="add_action(item, 'pcmd')") {{ $t("ClientCommand") }} 
+													button.dropdown-item(@click="add_action(item, 'scmd')") {{ $t("ServerCommand") }} 
+													button.dropdown-item(@click="add_action(item, 'close')") {{ $t("CloseMenu") }} 
+											div
 						
 						div.row.mb-3
 							div.mx-auto
@@ -158,7 +164,7 @@
 								div(v-if="type==='menu'")
 									div.raw-html(v-for="key, value in item.text.split('\\\\n')", v-bind:class="{'item-active': item.actions.length !== 0 && value === 0}") {{ value === 0 ? ((((item.position - 1) % items_per_page) + 1) + '. ') : '' }}{{ key }}
 								div(v-else)
-									div.raw-html(v-for="key, value in item.text.split('\\\\n')", v-bind:class="{'item-active': item.actions.length !== 0 && value === 0}") {{ item.position !== ' ' && value === 0 ? ((((item.position - 1) % items_per_page) + 1) + '. ') : '' }}{{ key }}
+									div.raw-html(v-for="key, value in item.text.split('\\\\n')", v-bind:class="{'item-active': item.actions.length !== 0 && value === 0}") {{ item.position !== " " ? (item.position + '. ') : "" }}{{ key }}
 							
 							// Back, Forward, Exit buttons 
 							div(v-if="type === 'menu'")
@@ -182,12 +188,14 @@
 
 <script>
 import LiveSearch from "../components/LiveSearch.vue";
+import draggable from "vuedraggable";
 
 export default {
 	name: "index",
 
 	components: {
-		LiveSearch
+		LiveSearch,
+		draggable
 	},
 
 	data: function() {
@@ -228,6 +236,16 @@ export default {
 		$("#flags").selectpicker();
 	},
 
+	computed: {
+		dragOptions() {
+			return {
+				animation: 200,
+				group: "description",
+				disabled: false
+			};
+		}
+	},
+
 	methods: {
 		create_menu: function() {
 			this.edit_menu("");
@@ -256,12 +274,16 @@ export default {
 				}
 
 				$("#flags").selectpicker("val", this.flags);
-				// seems like reactive action require one frame to start working 
+				// seems like reactive action require one frame to start working
 				setTimeout(() => {
 					if (this.$refs.exit_back) {
 						this.$refs.exit_back.refresh();
 					}
-				}, 1); 
+
+					$(function() {
+						$('[data-toggle="tooltip"]').tooltip();
+					});
+				}, 1);
 			};
 
 			let old = localStorage.getItem("_menubuilder_" + this.base_name);
@@ -282,17 +304,17 @@ export default {
 						icon: "warning",
 						buttons: {
 							leave: {
-								text: this.$t("DoNotSave"), 
+								text: this.$t("DoNotSave"),
 								className: "btn-danger",
 								value: "leave"
 							},
 							save: {
-								text: this.$t("Save"), 
+								text: this.$t("Save"),
 								className: "btn-success",
 								value: "save"
 							},
 							stay: {
-								text: this.$t("Stay"), 
+								text: this.$t("Stay"),
 								className: "btn-primary",
 								value: "stay"
 							}
@@ -390,6 +412,10 @@ export default {
 				text: "",
 				actions: []
 			});
+
+			$(function() {
+				$('[data-toggle="tooltip"]').tooltip();
+			});
 		},
 
 		delete_item: function(item) {
@@ -404,6 +430,9 @@ export default {
 		add_action: function(item, action) {
 			let item_index = this.items.indexOf(item);
 			this.items[item_index].actions.push({ action, target: "" });
+			$(function() {
+				$('[data-toggle="tooltip"]').tooltip();
+			});
 		},
 
 		delete_action: function(item, action) {
@@ -472,8 +501,14 @@ export default {
 				}
 			} else {
 				for (let i = 0; i < this.items.length; ++i) {
-					this.items[i].position = i + 1;
+					this.items[i].position = Number(i + 1).toString();
 				}
+			}
+		},
+
+		start_drag: function() {
+			if (this.type === "panel") {
+				return false;
 			}
 		},
 
