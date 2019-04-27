@@ -106,7 +106,7 @@
 						
 						draggable(v-model="items", :move="start_drag", @end="sort_items", handle=".handle", v-bind="dragOptions")
 							transition-group(type="transition")
-								div.mb-3(v-for="item of items", :key="item.text")
+								div.mb-3(v-for="item of items", :key="item.actions")
 									div.row
 										div.input-group
 											div.input-group-prepend
